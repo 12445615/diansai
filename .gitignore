@@ -1,0 +1,13 @@
+# CCS build output
+Debug/
+Release/
+*.o
+*.d
+*.d_raw
+*.out
+*.map
+*.hex
+*.bin
+
+# Local Codex workflow notes
+docs/superpowers/
