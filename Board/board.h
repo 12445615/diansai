@@ -39,4 +39,8 @@ void delay_ms(int __ms);
 void delay_1us(int __us);
 void delay_1ms(int __ms);
 
+void systick_timebase_init(void);
+uint32_t millis(void);
+bool systick_elapsed(uint32_t start_ms, uint32_t interval_ms);
+
 #endif

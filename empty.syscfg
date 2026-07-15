@@ -273,7 +273,7 @@ SYSCTL.clockTreeEn           = true;
 SYSCTL.validateClkStatus     = true;
 
 SYSTICK.periodEnable  = true;
-SYSTICK.period        = 40;
+SYSTICK.period        = 80000;
 SYSTICK.systickEnable = true;
 
 TIMER1.$name              = "TIMER_0";

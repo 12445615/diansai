@@ -47,6 +47,8 @@
    - `Encoder_Timer_Count`：测速定时器进入次数。
 
 7. CCS Debug 工程已完成构建和链接，生成 `Debug/sanshihaodaima.out`。
+8. SysTick 调整为 `1 ms` 中断时基，`delay_ms()` 改为使用毫秒计数，必要的 `delay_us()` 继续保留硬件周期延时。
+9. 主循环 OLED 改为每 `100 ms` 非阻塞刷新一次，PID、编码器和按键处理不需要等待 OLED。
 
 ### 已经确认的结论
 

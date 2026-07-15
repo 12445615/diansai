@@ -18,6 +18,9 @@
 #include "BSP/inc/huiduwumcu.h"
 #include "BSP/inc/xunji.h"
 #include "BSP/inc/jidianqi.h"
+
+#define OLED_REFRESH_INTERVAL_MS 100U
+
 uint8_t stage[10];
 uint8_t a;
 extern unsigned char current_data ;    // 当前数据
@@ -75,6 +78,7 @@ unsigned char rx_buff[256]={0};
 int main(void)
 {
     SYSCFG_DL_init();
+    systick_timebase_init();
     Set_Pwm1(0);
     Set_Pwm2(0);
     Motor_Init();
@@ -119,17 +123,13 @@ int main(void)
 		No_MCU_Ganv_Sensor_Init(&sensor,white,black);
 	
 		delay_ms(100);
+    uint32_t oled_last_refresh_ms = millis() - OLED_REFRESH_INTERVAL_MS;
 //Set_Pwm1(600);   
 //Set_Pwm2(-600);   
 //紫色灯管开关
     // Set_Relay_Switch(1);
     while (1)
     {
-
-    sprintf(aaa, "%d", Reality_Velocity1*10);
-     OLED_ShowString(0,12,aaa,12,1);
-     sprintf(aaa, "%d", Target_Velocity1*10);
-     OLED_ShowString(0,36,aaa,12,1);
 //得到目标位置值pid位置式
     Target_Position1=Num_Encoder_Cnt(num1 ,500,20);  /* 根据转数求出对应脉冲数 */
 	Target_Position2=Num_Encoder_Cnt(num2 ,500,20);  /* 根据转数求出对应脉冲数 */
@@ -139,8 +139,16 @@ int main(void)
 	
            //得到陀螺仪的数
           printfshu(); 
-       
-     	OLED_Refresh();
+
+        if (systick_elapsed(oled_last_refresh_ms, OLED_REFRESH_INTERVAL_MS))
+        {
+            oled_last_refresh_ms = millis();
+            sprintf(aaa, "%d", Reality_Velocity1 * 10);
+            OLED_ShowString(0, 12, aaa, 12, 1);
+            sprintf(aaa, "%d", Target_Velocity1 * 10);
+            OLED_ShowString(0, 36, aaa, 12, 1);
+            OLED_Refresh();
+        }
         anjian();
 
 

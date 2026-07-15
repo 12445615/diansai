@@ -82,10 +82,49 @@ int lc_printf(char* format,...)
 
 /* ================ 延时函数封装 =================== */
 
-void delay_us(int __us) { delay_cycles( (CPUCLK_FREQ / 1000 / 1000)*__us); }
-void delay_ms(int __ms) 
-{for(int i=0;i<100;i++)
-delay_cycles(320000/1000*__ms); }
+volatile uint32_t g_systick_ms = 0U;
 
-void delay_1us(int __us) { delay_cycles( (CPUCLK_FREQ / 1000 / 1000)*__us); }
-void delay_1ms(int __ms) { delay_cycles( (CPUCLK_FREQ / 1000)*__ms); }
+void SysTick_Handler(void)
+{
+    g_systick_ms++;
+}
+
+void systick_timebase_init(void)
+{
+    g_systick_ms = 0U;
+    NVIC_SetPriority(SysTick_IRQn, 3U);
+    DL_SYSTICK_enableInterrupt();
+}
+
+uint32_t millis(void)
+{
+    return g_systick_ms;
+}
+
+bool systick_elapsed(uint32_t start_ms, uint32_t interval_ms)
+{
+    return (uint32_t)(millis() - start_ms) >= interval_ms;
+}
+
+void delay_us(int __us)
+{
+    if (__us > 0) {
+        delay_cycles((CPUCLK_FREQ / 1000U / 1000U) * (uint32_t)__us);
+    }
+}
+
+void delay_ms(int __ms)
+{
+    uint32_t start_ms;
+
+    if (__ms <= 0) {
+        return;
+    }
+
+    start_ms = millis();
+    while (!systick_elapsed(start_ms, (uint32_t)__ms)) {
+    }
+}
+
+void delay_1us(int __us) { delay_us(__us); }
+void delay_1ms(int __ms) { delay_ms(__ms); }
